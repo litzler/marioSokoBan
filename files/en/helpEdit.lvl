@@ -1,0 +1,13 @@
+HELP
+Editor
+Back :  Esc
+ESC :  Exit
+X(table) :  Exit
+Click Left :  Place Item
+Click Right :  Remove Item
+1 :  Wall
+2 :  Box
+3 :  Target
+4 :  Mario
+5 :  BoxOnTarget
+S :  Save
