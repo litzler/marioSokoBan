@@ -50,3 +50,12 @@ def sauveCarte(carte, levelNumber):
     f.write(''.join(ligne))
 
     f.close()
+
+def searchMario(carte, joueurPos):      # Recherche de Mario
+    for lgn in range(NB_BLOCS_HAUTEUR):             # et mise à jour de
+        for col in range(NB_BLOCS_LARGEUR):          # ses coordonnées
+            if carte[lgn][col] == MARIO:
+                joueurPos.x = col
+                joueurPos.y = lgn
+                carte[lgn][col] = VIDE              # et vide sa case
+    return

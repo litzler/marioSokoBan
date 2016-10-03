@@ -3,7 +3,6 @@ from pygame.locals import * # pour les constantes touches...
 
 from constantes import *
 from fichiers import *
-from jeu import *
 from  general import *
 
 def loadSaveMenu (screen, levelNumber, saveNumber, carte, joueurPos, levelFinal):
@@ -163,14 +162,3 @@ def getData(saveNumber, tableau, fondBlanc, carte, joueurPos, levelNumber, level
         f.close()
     saveNumber=0
     return (int(levelNumber))
-
-def searchMario(carte, joueurPos):     #, joueurDebut, joueurPos):     # Recherche de Mario
-    for lgn in range(NB_BLOCS_HAUTEUR):             # et mise à jour de
-        for col in range(NB_BLOCS_LARGEUR):         # ses coordonnées
-            if carte[lgn][col] == MARIO:
-                # joueurDebut.x = lgn
-                # joueurDebut.y = col
-                joueurPos.x = col
-                joueurPos.y = lgn
-                carte[lgn][col] = VIDE              # vide sa case
-    return

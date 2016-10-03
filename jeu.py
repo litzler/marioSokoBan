@@ -63,10 +63,10 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
     # load map
     chargeCarte(carte, levelNumber)
 
-    # codage du tableau pour déplacement automatiques
+    # codage du tableau pour déplacements automatiques
     tableauCodeAStar(carte)
 
-    # search mario
+    # cherche mario --> joueurPos.x et joueurPos.y et VIDE sa position dans carte
     searchMario(carte, joueurPos)
 
     # white Bar
@@ -124,7 +124,8 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
 
                 # clic sur case vide ou objectif
                 if (carte[caselgn][casecol] == VIDE or carte[caselgn][casecol] == OBJECTIF):
-                    if (caselgn == joueurPos.y and casecol == joueurPos.x): break # si clic sur perso
+                    # si clic sur perso
+                    if (caselgn == joueurPos.y and casecol == joueurPos.x): break
                         # and (caselgn != joueurPos.y or casecol != joueurPos.x):
                     tableauCodeAStar(carte)
                     trajet[:] = []
@@ -133,7 +134,6 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                     Ast.sortiey = casecol
                     grille[Ast.entreex][Ast.entreey] = 3	# Definit l'etat de l'entree
                     grille[Ast.sortiex][Ast.sortiey] = 4 	# Definit l'etat de la sortie
-
                     w = AStar()     # determine le chemin
                     w.process()
 
@@ -143,7 +143,7 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                     or (abs(Ast.sortiey - Ast.entreey) == 1 and Ast.entreex == Ast.sortiex):
                         if carte[Ast.sortiex][Ast.sortiey] == VIDE\
                         or carte[Ast.sortiex][Ast.sortiey] == OBJECTIF:
-                            # on affiche perso
+                            # on valide affichage perso
                             trajet.append((Ast.sortiex, Ast.sortiey))
                             trajet.reverse()
                             marche = True
@@ -156,7 +156,6 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                         trajet.reverse()
                         marche = True
                         joueurPosPreced = (joueurPos.x, joueurPos.y)
-                        listPos.append(joueurPosPreced)
                         nMarch = len(trajet)
 
                 elif (carte[caselgn][casecol] == CAISSE or carte[caselgn][casecol] == CAISSE_OK)\
@@ -189,9 +188,6 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                         tableauCodeAStar(carte)
                         moveNumber += 1
                         if soundly == True: pas.play()
-                    
-                    print(joueurPosPreced)
-                    print(listPos)
 
 # ---------- prise en charge des touches spéciales: reour arrière, niveau suivant.... ---------------------------------
 
@@ -219,7 +215,7 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                     pygame.time.delay(250)
 
                 # Passage au niveau suivant
-                elif event.key == K_PAGEDOWN:
+                elif event.key == K_PAGEUP:
                     if levelNumber > 1:
                         levelNumber -= 1
                         if difficulty:
@@ -233,7 +229,7 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                         searchMario(carte, joueurPos)
 
                 # Retour niveau precedent
-                elif event.key == K_PAGEUP:
+                elif event.key == K_PAGEDOWN:
                     if levelNumber < niveauAtteint:
                         levelNumber += 1
                         if difficulty:
@@ -264,7 +260,7 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                 elif event.key == K_h and lang == EN:
                     aide(screen,mode,lang,langu)
 
-# ---------- Affichage des résultats des actions précédentes ----------------------------------------------------------
+# ---------- Affiche les résultats des actions précédentes ----------------------------------------------------------
 
         # Ecran noir --> efface fenetre
         screen.fill(BLACK)
@@ -295,7 +291,6 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
             marioActuel = mario[m]
             objectPos.x = joueurPos.x * TAILLE_BLOC
             objectPos.y = joueurPos.y * TAILLE_BLOC
-            
             screen.blit(marioActuel, objectPos)
             moveNumber += 1
             nMarch -= 1
@@ -310,6 +305,10 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
             objectPos.x = joueurPos.x  * TAILLE_BLOC
             objectPos.y = joueurPos.y * TAILLE_BLOC
             screen.blit(marioActuel, objectPos)
+#            listPos.append(joueurPosPreced)     #----------------------------------------------------------
+#            print(joueurPosPreced)
+#            print(listPos)
+
 
         # Si tous les objectifs sont recouverts
         if objectifRestant == 0:        # Affiche le texte Bravo! ou Nice!
@@ -482,16 +481,14 @@ def getCoordCaseJeu (mousex,  mousey):
     casex = (mousey // TAILLE_BLOC)
     return (casex, casey)
 
-def searchMario(carte, joueurPos):     #, joueurDebut, joueurPos):     # Recherche de Mario
-    for lgn in range(NB_BLOCS_HAUTEUR):             # et mise à jour de
-        for col in range(NB_BLOCS_LARGEUR):         # ses coordonnées
-            if carte[lgn][col] == MARIO:
-                # joueurDebut.x = lgn
-                # joueurDebut.y = col
-                joueurPos.x = col
-                joueurPos.y = lgn
-                carte[lgn][col] = VIDE              # vide sa case
-    return
+#def searchMario(carte, joueurPos):      # Recherche de Mario
+#    for lgn in range(NB_BLOCS_HAUTEUR):             # et mise à jour de
+#        for col in range(NB_BLOCS_LARGEUR):          # ses coordonnées
+#            if carte[lgn][col] == MARIO:
+#                joueurPos.x = col
+#                joueurPos.y = lgn
+#                carte[lgn][col] = VIDE              # et vide sa case
+#    return
 
 def deplacement(carte, poslgn, poscol, direction, joueurPos, joueurPosPreced):
 
