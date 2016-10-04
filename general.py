@@ -57,7 +57,7 @@ def shadeMainText(lignes, tableau, k):
         else:
             tableau[i].partie = police.render(tableau[i].data, True, WHITE, BLACK)
 
-def printLang(lang):        #, pathFile):
+def printLang(lang): 
     if lang == FR:
         pathFile = 'fr'
     else:

@@ -12,7 +12,7 @@ from aide import *
 
 def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mode):
 
-# ---------- Variables locales à jouer() ---------------------------------
+# ---------- Variables locales de la fonction jouer() ---------------------------------
 
     boucle = True
 
@@ -31,11 +31,12 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
     nMarch = 0
     moveNumber = 0
     niveauAtteint = 1
-
+    
+    # détermine les tableaux pour la carte du jeu et sa copie
     carte = [[int for lgn in range(NB_BLOCS_HAUTEUR)]for col in range(NB_BLOCS_LARGEUR)]
     copieCarte = [[int for lgn in range(NB_BLOCS_HAUTEUR)]for col in range(NB_BLOCS_LARGEUR)]
 
-    # load images
+    # chargement des images
     mur = pygame.image.load(SOURCE_IMG + 'mur.jpg').convert()
     caisse = pygame.image.load(SOURCE_IMG + 'caisse.jpg').convert()
     caisse_ok = pygame.image.load(SOURCE_IMG + 'caisse_ok.jpg').convert()
@@ -46,9 +47,9 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
     mario[GAUCHE] = pygame.image.load(SOURCE_IMG + 'mario_gauche.gif').convert_alpha()
     marioActuel = mario[BAS]
 
-    # load sound
-    pas = pygame.mixer.Sound('stepwlk2.wav')
-    musique = pygame.mixer.Sound('mario.wav')
+    # chargement des sons
+    pas = pygame.mixer.Sound('stepwlk2.wav')        # son de la marche
+    musique = pygame.mixer.Sound('mario.wav')      # musique de fond
 
 # ---------- Initialisations & chargements -------------------------------
     if difficulty:
@@ -60,7 +61,7 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
     # else:
     #     musique.stop()
 
-    # load map
+    # charge la carte correspondant au niveau donné dans les paramètres
     chargeCarte(carte, levelNumber)
 
     # codage du tableau pour déplacements automatiques
@@ -69,27 +70,27 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
     # cherche mario --> joueurPos.x et joueurPos.y et VIDE sa position dans carte
     searchMario(carte, joueurPos)
 
-    # white Bar
+    # Barre blanche en dessous du tableau de jeu (largeur de lécran et 60 de hauteur)
     whiteBar = pygame.Surface((screen.get_width(), 60), screen.get_flags())
     whiteBar.fill(WHITE)
 
-    # timeText
+    # Prise du temps
     tempsActuel = pygame.time.get_ticks()
 
-    pathFile = printLang(lang)                          # 'fr' ou 'en'
-    sourceFile = SOURCE_FILE + pathFile + '/jeu.lvl'    # './files/' 'fr ou en' '/jeu.lvl'
+    pathFile = printLang(lang)                          # répertoire 'fr' ou 'en'
+    sourceFile = SOURCE_FILE + pathFile + '/jeu.lvl'    # ./files/fr/jeu.lvl ou ./files/en/jeu.lvl
     # Fin du Jeu! PERDU! BRAVO! Temps Aide: A Vies: Vie: Niveau Pas
     # ou
     # Game Over! LOSE! NICE! Time Help: H Lives: Life: Level Move
-    lignes = compteLignes(sourceFile)
+    lignes = compteLignes(sourceFile)           # détermine le nbre de lignes ds le fichier
     tableau = [Text() for i in range(lignes)]   # remplit le tableau de jeu avec les mots de la langue
-    initialiseGameTable(sourceFile, lignes, tableau)
+    initialiseGameTable(sourceFile, lignes, tableau)    # initialise les éléments du tableau
 
-    for i in range(2):      # coord du tableau 0 et 1 Fin du Jeu! PERDU! ou Game Over! LOSE!
+    for i in range(2):      # coord de tableau[0) et [1] Fin du Jeu! PERDU! ou Game Over! LOSE!
         tableau[i].positionX = (screen.get_width() - tableau[i].partie.get_width())//2
         tableau[i].positionY = (screen.get_height() - tableau[i].partie.get_height())//2
 
-    # timeText
+    # Texte d'affichage du temps
     charTemps = tableau[3].data + ': ' + str(minutes) + ' : ' + str(secondes)
     pygame.font.init()
     police = pygame.font.Font('angelina.ttf', 20)
@@ -105,13 +106,13 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                 pygame.mixer.stop()
 
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                boucle = False      # sortie de la boucle
+                boucle = False      # sortie de la boucle avec x de la fenêtre ou Echap
 
 # ---------- prise en charge des actions de la souris pour jouer ------------------------------------------------------
 
             if event.type == MOUSEBUTTONDOWN:
-                mousex,  mousey = event.pos     # coord x,y ecran
-                caselgn, casecol = getCoordCaseJeu (mousex,  mousey) # x,y des cases du jeu
+                mousex,  mousey = event.pos     # coord x,y écran
+                caselgn, casecol = getCoordCaseJeu (mousex,  mousey) # x, y des cases du jeu
 
                 # si dans zone d'affichage hors zone de jeu
                 if caselgn > NB_CASES-1 or casecol > NB_CASES-1:
@@ -124,20 +125,20 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
 
                 # clic sur case vide ou objectif
                 if (carte[caselgn][casecol] == VIDE or carte[caselgn][casecol] == OBJECTIF):
-                    # si clic sur perso
+                    # si clic sur perso on ne fait rien
                     if (caselgn == joueurPos.y and casecol == joueurPos.x): break
-                        # and (caselgn != joueurPos.y or casecol != joueurPos.x):
+                    # sinon 
                     tableauCodeAStar(carte)
                     trajet[:] = []
                     Ast.entreey, Ast.entreex = joueurPos.x, joueurPos.y
                     Ast.sortiex = caselgn
                     Ast.sortiey = casecol
-                    grille[Ast.entreex][Ast.entreey] = 3	# Definit l'etat de l'entree
-                    grille[Ast.sortiex][Ast.sortiey] = 4 	# Definit l'etat de la sortie
-                    w = AStar()     # determine le chemin
-                    w.process()
+                    grille[Ast.entreex][Ast.entreey] = 3	# Définit le code de l'entrée
+                    grille[Ast.sortiex][Ast.sortiey] = 4 	# Définit le code de la sortie
+                    w = AStar()      # classe AStar
+                    w.process()     # détermine le chemin entre 3 et 4
 
-                    #si trajet d'une seule case
+                    # si trajet d'une seule case
                     if len(trajet) == 0 \
                     and (abs(Ast.sortiex - Ast.entreex) == 1 and Ast.entreey == Ast.sortiey)\
                     or (abs(Ast.sortiey - Ast.entreey) == 1 and Ast.entreex == Ast.sortiex):
@@ -160,28 +161,33 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
 
                 elif (carte[caselgn][casecol] == CAISSE or carte[caselgn][casecol] == CAISSE_OK)\
                       and (abs(caselgn - joueurPos.y) == 1 or abs(casecol - joueurPos.x) == 1):
-                    # clique case autre que vide ou objectif
+                    # clique case autre que vide ou objectif --> caisse sur case vide ou caisse sur objectif
                     persocol, persolgn =  joueurPos.x, joueurPos.y
                     joueurPosPreced = (joueurPos.x, joueurPos.y)
                     listPos.append(joueurPosPreced)
+                    # on détermeine la direction pour choisir image de mario et déplacement
+                        # vers le haut
                     if caselgn < persolgn and casecol == persocol:
                         marioActuel = mario[HAUT]
                         deplacement(carte, persolgn, persocol, HAUT, joueurPos, joueurPosPreced)
                         tableauCodeAStar(carte)
                         moveNumber += 1
                         if soundly == True: pas.play()
+                            # vers le bas
                     elif caselgn > persolgn and casecol == persocol:
                         marioActuel = mario[BAS]
                         deplacement(carte, persolgn, persocol, BAS, joueurPos, joueurPosPreced)
                         tableauCodeAStar(carte)
                         moveNumber += 1
                         if soundly == True: pas.play()
+                            # vers la gauche
                     elif casecol < persocol and caselgn == persolgn:
                         marioActuel = mario[GAUCHE]
                         deplacement(carte, persolgn, persocol, GAUCHE, joueurPos, joueurPosPreced)
                         tableauCodeAStar(carte)
                         moveNumber += 1
                         if soundly == True: pas.play()
+                            # vers la droite
                     elif casecol > persocol and caselgn == persolgn:
                         marioActuel = mario[DROITE]
                         deplacement(carte, persolgn, persocol, DROITE, joueurPos, joueurPosPreced)
@@ -189,20 +195,20 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                         moveNumber += 1
                         if soundly == True: pas.play()
 
-# ---------- prise en charge des touches spéciales: reour arrière, niveau suivant.... ---------------------------------
+# ---------- prise en charge des touches spéciales: retour arrière, niveau suivant.... ---------------------------------
 
             elif event.type == KEYDOWN:
 
                 # Retour en arrière d'une position
-                if event.key == K_F1:
+                if event.key == K_LEFT:             # K_F1:
                     joueurPos.x, joueurPos.y = joueurPosPreced
                     for lgn in range(NB_BLOCS_HAUTEUR):
                         for col in range(NB_BLOCS_LARGEUR):
                             carte[lgn][col] = copieCarte[lgn][col]
                     pygame.time.delay(250)
 
-                # retour debut du même niveau
-                if event.key == K_F2:
+                # retour début du même niveau
+                if event.key == K_RIGHT:            # K_F2:
                     if difficulty:
                         minutes, secondes = backTime(levelNumber, minutes, secondes)
                     else:
@@ -214,8 +220,8 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                     searchMario(carte, joueurPos)
                     pygame.time.delay(250)
 
-                # Passage au niveau suivant
-                elif event.key == K_PAGEUP:
+                # Retour au niveau précédent
+                elif event.key == K_DOWN:                 # K_PAGEUP:
                     if levelNumber > 1:
                         levelNumber -= 1
                         if difficulty:
@@ -228,8 +234,8 @@ def jouer(screen, levelNumber, lang, langu, levelFinal, difficulty, soundly, mod
                         chargeCarte(carte,levelNumber)
                         searchMario(carte, joueurPos)
 
-                # Retour niveau precedent
-                elif event.key == K_PAGEDOWN:
+                #  Passage niveau suivant
+                elif event.key == K_UP:               # K_PAGEDOWN:
                     if levelNumber < niveauAtteint:
                         levelNumber += 1
                         if difficulty:
@@ -481,19 +487,7 @@ def getCoordCaseJeu (mousex,  mousey):
     casex = (mousey // TAILLE_BLOC)
     return (casex, casey)
 
-#def searchMario(carte, joueurPos):      # Recherche de Mario
-#    for lgn in range(NB_BLOCS_HAUTEUR):             # et mise à jour de
-#        for col in range(NB_BLOCS_LARGEUR):          # ses coordonnées
-#            if carte[lgn][col] == MARIO:
-#                joueurPos.x = col
-#                joueurPos.y = lgn
-#                carte[lgn][col] = VIDE              # et vide sa case
-#    return
-
 def deplacement(carte, poslgn, poscol, direction, joueurPos, joueurPosPreced):
-
-#    joueurPosPreced = (joueurPos.x, joueurPos.y)
-#    listPos.append(joueurPosPreced)
 
     if direction == HAUT:
         if poslgn - 1 < 0:      # Si le joueur depasse l'ecran, on arrete
