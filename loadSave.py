@@ -89,7 +89,7 @@ def loadSaveMenu (screen, levelNumber, saveNumber, carte, joueurPos, levelFinal)
                     continuer=0
                 if event.key == K_1 or event.key == K_KP1:
                     fondBlanc=1
-                if event.key == K_2 or event.key == K_KP1:
+                if event.key == K_2 or event.key == K_KP2:
                     fondBlanc=2
                 if event.key == K_3 or event.key == K_KP3:
                     fondBlanc=3

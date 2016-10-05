@@ -7,7 +7,6 @@ from aide import *
 
 def edit(screen, levelNumber ,mode, lang, langu, levelFinal):
 
-    continuer = True
     motionX = 0
     motionY = 0
     alsoMario = 0
@@ -68,6 +67,7 @@ def edit(screen, levelNumber ,mode, lang, langu, levelFinal):
     tableau[1].partie = police.render(tableau[1].data, True, BLUE)
 
     # event
+    continuer = True
     while(continuer):
 
         # check if there is mario on the map if not initialize the boolean

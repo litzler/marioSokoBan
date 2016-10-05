@@ -2,9 +2,9 @@ import pygame
 from constantes import *
 
 class Text:
-    id = 0
-    level = 0
-    percent= 0.00000
+#    id = 0
+#    level = 0
+#    percent= 0.00000
     data = []                   # le texte
     positionX = 0               # coord x
     positionY = 0               # coord y
